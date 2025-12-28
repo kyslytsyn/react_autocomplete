@@ -87,7 +87,10 @@ export const Dropdown: React.FC<Props> = ({
                 key={person.name}
                 className="dropdown-item"
                 data-cy="suggestion-item"
-                onMouseDown={() => handleSelect(person)}
+                onMouseDown={event => {
+                  event.preventDefault();
+                  handleSelect(person);
+                }}
               >
                 <p className="has-text-link">{person.name}</p>
               </div>
