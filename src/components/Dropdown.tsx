@@ -24,8 +24,17 @@ export const Dropdown: React.FC<Props> = ({
   const applyQuery = useMemo(() => debounce(setAppliedQuery, delay), [delay]);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setQuery(event.target.value);
-    applyQuery(event.target.value);
+    const value = event.target.value;
+    const trimmedValue = value.trim();
+
+    setQuery(value);
+
+    if (trimmedValue === '') {
+      applyQuery('');
+    } else {
+      applyQuery(trimmedValue);
+    }
+
     onInputChange();
   };
 
@@ -35,8 +44,12 @@ export const Dropdown: React.FC<Props> = ({
     onSelected(person);
   };
 
-  const filteredPeople = [...people].filter(person =>
-    person.name.toLowerCase().includes(appliedQuery.toLowerCase()),
+  const filteredPeople = useMemo(
+    () =>
+      [...people].filter(person =>
+        person.name.toLowerCase().includes(appliedQuery.toLowerCase()),
+      ),
+    [people, appliedQuery],
   );
 
   useEffect(() => {
@@ -66,7 +79,7 @@ export const Dropdown: React.FC<Props> = ({
 
       <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
         <div className="dropdown-content">
-          {filteredPeople.length === 0 ? (
+          {filteredPeople.length === 0 && appliedQuery !== '' ? (
             <Notification />
           ) : (
             filteredPeople.map(person => (
